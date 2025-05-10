@@ -20,6 +20,20 @@ pipeline {
                 
             }
         }
+        stage("Terraform fmt stage"){
+            steps{
+            
+                sh'terraform fmt'
+                
+            }
+        }
+        stage("Terraform validate stage"){
+            steps{
+            
+                sh'terraform validate'
+                
+            }
+        }
         stage("Create an EKS Cluster") {
              when {
                 expression {
