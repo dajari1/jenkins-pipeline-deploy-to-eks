@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "jenkins-automation-server"
-    region = "eu-west-2"
-    key    = "infra-backend/terraform.tfstate"
+    bucket = "denn-jenkins"
+    region = "us-east-1"
+    key    = "dennis-backend/terraform.tfstate"
   }
 }
