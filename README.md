@@ -128,3 +128,32 @@ Forwarding from [::1]:3000 -> 80
 ## This is the final deployment of nginx web server on AWS EKS cluster
 
 ![Image](https://github.com/user-attachments/assets/6924c980-fe65-40da-9a37-ee9fd450ac92)
+
+
+
+## Creating a yaml file
+
+alias k=kubectl
+
+export do="--dry-run=client -o yaml"
+
+kubectl run --port 80 --image nginx nginx $do > pod.yaml
+
+cat pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
