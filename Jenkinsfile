@@ -14,24 +14,44 @@ pipeline {
     }
     stages {
          stage("Terraform init stage"){
-            steps{
-            
-                sh'terraform init'
-                
+            steps {
+                script {
+                    dir('terraform') {
+                       sh'terraform init'
+                      
+                    }
+                }
             }
         }
-        stage("Terraform fmt stage"){
-            steps{
-            
-                sh'terraform fmt'
-                
+        stage("Terraform format stage"){
+            steps {
+                script {
+                    dir('terraform') {
+                       
+                       sh'terraform fmt'
+                      
+                    }
+                }
             }
         }
         stage("Terraform validate stage"){
-            steps{
-            
-                sh'terraform validate'
-                
+            steps {
+                script {
+                    dir('terraform') {
+                      
+                       sh'terraform validate'
+                    }
+                }
+            }
+        }
+        stage("Terraform plan stage"){
+            steps {
+                script {
+                    dir('terraform') {
+                      
+                       sh'terraform plan'
+                    }
+                }
             }
         }
         stage("Create an EKS Cluster") {
@@ -48,6 +68,26 @@ pipeline {
                         
                        
                         sh'terraform ${action} --auto-approve'
+                    }
+                }
+            }
+        }
+        stage("Deploy to EKS") {
+             when {
+                expression {
+                    //return params.Appenv
+                    return params.action=="apply"
+                }
+            }
+            steps {
+                script {
+                    dir('kubernetes') {
+                        sh "aws eks update-kubeconfig --name example"
+                        sh 'kubectl config current-context'
+                        //sh 'eksctl get cluster'
+                        sh "kubectl get ns"
+                        sh "kubectl apply -f nginx-deployment.yaml"
+                        sh "kubectl apply -f nginx-service.yaml"
                     }
                 }
             }
@@ -71,19 +111,6 @@ pipeline {
                 }
             }
         }
-        stage("Deploy to EKS") {
-            steps {
-                script {
-                    dir('kubernetes') {
-                        sh "aws eks update-kubeconfig --name myapp-eks-cluster"
-                        sh 'kubectl config current-context'
-                        sh 'eksctl get cluster'
-                        sh "kubectl get ns"
-                        sh "kubectl apply -f nginx-deployment.yaml"
-                        sh "kubectl apply -f nginx-service.yaml"
-                    }
-                }
-            }
-        }
+        
     }
 }
